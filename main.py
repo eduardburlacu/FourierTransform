@@ -14,7 +14,7 @@ y=np.array([])
 for i in range(N):
     y = np.append(y, current)
 
-plt.scatter(t_show,y)
+plt.scatter(t_show,y, c='y',edgecolors='r')
 plt.plot(t_show,y)
 plt.grid()
 plt.show()
