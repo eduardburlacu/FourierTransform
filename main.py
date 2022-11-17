@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
 def generate_random_signal(fs,N,start,end, weight_constant=False):
     T = (end - start) / N
@@ -45,5 +46,10 @@ if __name__ =='__main__':
     N = 5
     start = 0
     end = 50.0
-    t, x, t_show, x_show = generate_sine_signal([2.0,3.2,4.8],fs,N,start,end)
+    resonance= 2* np.pi *np.array([1.9, 1.0])
+    t, x, t_show, x_show = generate_sine_signal(resonance,fs,N,start,end)
     plot_signal(t_show, x_show)
+    X_show = np.abs(fft(x_show))
+    freq = fftfreq(x_show.size, 1/fs)
+    plot_signal(freq, X_show)
+
