@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def Hann_function(N=None, t=None):
-    if t is not None: N=t.size
-    f = np.arange(N)
+    if N is None: N=t.size
+    f = np.arange(t.size)
     f = 1/2 * (1-np.cos( 2*np.pi* f /(N-1) ) )
     if t is not None: f *= t
     return f

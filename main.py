@@ -2,6 +2,7 @@ import numpy as np
 from numpy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
 from window_functions import Hann_function as Hann
+
 def generate_random_signal(fs,N,start,end, weight_constant=False):
     T = (end - start) / N
     t_show = np.arange(start, end, 1 / fs)
@@ -43,7 +44,7 @@ def generate_sine_signal(sines, fs,N,start,end,weight_constant=False, to_plot=Tr
             x += np.sin(sine * t + PHASE )
             x_true += np.sin(sine * t_show + PHASE )
     x = Hann(t=x)
-    x_true = Hann(t=x_true)
+    x_true = Hann(t=x_true, N=x.size)
     x_show = np.array([])
     for i in range(N):
         x_show = np.append(x_show, x)
