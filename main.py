@@ -35,6 +35,7 @@ def generate_sine_signal(sines, fs,N,start,end, weight_constant=False):
     else:
         for sine in sines:
             x += np.sin(sine * t + np.random.random())
+    x -= min(x)
     x_show = np.array([])
     for i in range(N):
         x_show = np.append(x_show, x)
@@ -46,8 +47,8 @@ if __name__ =='__main__':
     N = 5
     start = 0
     end = 50.0
-    resonance= 2* np.pi *np.array([1.9, 1.0])
-    t, x, t_show, x_show = generate_sine_signal(resonance,fs,N,start,end)
+    resonance= 2* np.pi *np.array([2., 1.0])
+    t, x, t_show, x_show = generate_sine_signal(resonance,fs,N,start,end,True)
     plot_signal(t_show, x_show)
     X_show = np.abs(fft(x_show))
     freq = fftfreq(x_show.size, 1/fs)
