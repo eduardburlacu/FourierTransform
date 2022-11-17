@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
+from window_functions import Hann_function as Hann
 def generate_random_signal(fs,N,start,end, weight_constant=False):
     T = (end - start) / N
     t_show = np.arange(start, end, 1 / fs)
@@ -18,38 +19,47 @@ def generate_random_signal(fs,N,start,end, weight_constant=False):
         x_show = np.append(x_show, x)
     return t,x, t_show, x_show
 
-def plot_signal(t_show, x_show):
+def plot_signal(t_show, x_show, x_true=None):
     plt.scatter(t_show, x_show, c='y', edgecolors='r')
-    plt.plot(t_show, x_show)
+    plt.plot(t_show, x_show, 'b')
+    if x_true is not None: plt.plot(t_show, x_true, 'g')
     plt.grid()
     plt.show()
 
-def generate_sine_signal(sines, fs,N,start,end, weight_constant=False):
+def generate_sine_signal(sines, fs,N,start,end,weight_constant=False, to_plot=True):
     T = (end - start) / N
     t_show = np.arange(start, end, 1 / fs)
     t = np.arange(0, T, 1 / fs)
     x=0
+    x_true=0
     if weight_constant:
         for sine in sines:
-            x += np.random.normal(1,0.25) * np.sin(sine * t + np.random.random())
+            A, PHASE = np.random.normal(1,0.25), np.random.random()
+            x += A * np.sin(sine * t + PHASE )
+            x_true += A * np.sin(sine * t_show + PHASE )
     else:
         for sine in sines:
-            x += np.sin(sine * t + np.random.random())
-    #x -= min(x)
+            PHASE = np.random.random()
+            x += np.sin(sine * t + PHASE )
+            x_true += np.sin(sine * t_show + PHASE )
+    x = Hann(t=x)
+    x_true = Hann(t=x_true)
     x_show = np.array([])
     for i in range(N):
         x_show = np.append(x_show, x)
-    return t,x, t_show, x_show
+
+    if to_plot: return t_show, x_show, x_true
+    else: return t,x, x_true
 
 
 if __name__ =='__main__':
-    fs = 10.0 # Sample and evaluate the data at this frequency for the period T
-    N = 5
+    fs = 28.0 # Sample and evaluate the data at this frequency for the period T
+    N = 6
     start = 0
-    end = 50.0
-    resonance= 2* np.pi *np.array([2., 1.0])
-    t, x, t_show, x_show = generate_sine_signal(resonance,fs,N,start,end,True)
-    plot_signal(t_show, x_show)
+    end = 30.0
+    resonance= 2* np.pi *np.array([2.23, 1.03,3.13])
+    t_show, x_show, x_true = generate_sine_signal(resonance,fs,N,start,end,True)
+    plot_signal(t_show, x_show, x_true)
     X_show = np.abs(fft(x_show))
     freq = fftfreq(x_show.size, 1/fs)
     plot_signal(freq, X_show)
