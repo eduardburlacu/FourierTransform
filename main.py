@@ -35,7 +35,7 @@ def generate_sine_signal(sines, fs,N,start,end, weight_constant=False):
     else:
         for sine in sines:
             x += np.sin(sine * t + np.random.random())
-    x -= min(x)
+    #x -= min(x)
     x_show = np.array([])
     for i in range(N):
         x_show = np.append(x_show, x)

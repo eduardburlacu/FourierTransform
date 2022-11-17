@@ -11,7 +11,7 @@ t, x, t_show, x_show = generate_sine_signal(resonance, fs, N, start, end)
 #Now use 3b1b's insight into how unmixing works.
 r = np.abs(x)
 #omega = 2**(np.linspace(0., T * fs, 20))
-omega = 2 * np.pi * 2.7
+omega = 2 * np.pi * 1.9
 theta = omega * t
 fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 ax.plot(theta, x)
