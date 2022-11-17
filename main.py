@@ -24,8 +24,12 @@ def plot_signal(t_show, x_show, x_true=None):
     plt.scatter(t_show, x_show, c='y', edgecolors='r')
     plt.plot(t_show, x_show, 'b')
     if x_true is not None: plt.plot(t_show, x_true, 'g')
-    plt.grid()
-    plt.show()
+
+def plot_frequency(arrays, fs):
+    for array in arrays:
+        X_show = np.abs(fft(array))
+        freq = fftfreq(x_show.size, 1 / fs)
+        plt.plot(freq, X_show)
 
 def generate_sine_signal(sines, fs,N,start,end,weight_constant=False, to_plot=True):
     T = (end - start) / N
@@ -61,7 +65,8 @@ if __name__ =='__main__':
     resonance= 2* np.pi *np.array([2.23, 1.03,3.13])
     t_show, x_show, x_true = generate_sine_signal(resonance,fs,N,start,end,True)
     plot_signal(t_show, x_show, x_true)
-    X_show = np.abs(fft(x_show))
-    freq = fftfreq(x_show.size, 1/fs)
-    plot_signal(freq, X_show)
-
+    plt.grid()
+    plt.show()
+    plot_frequency([x_show, x_true],fs)
+    plt.grid()
+    plt.show()
