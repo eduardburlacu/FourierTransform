@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.signal.windows as window
 
 def Hann_function(N=None, t=None):
     if N is None: N=t.size
@@ -8,7 +9,12 @@ def Hann_function(N=None, t=None):
     if t is not None: f *= t
     return f
 
+#def Tukey_function(N=None, t=None, a=0.5):
 
-#t=np.arange(0, 25)
-#plt.plot(t, Hann_function(t.size,t))
-#plt.show()
+if __name__ =='__main__':
+    t=np.arange(0, 25)
+    plt.plot(t, window.hann(t.size), label="hann")
+    plt.plot(t, window.tukey(t.size), label="tukey")
+    plt.plot(t, window.kaiser(t.size, 3), label="kaiser")
+    plt.legend()
+    plt.show()

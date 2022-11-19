@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
-from window_functions import Hann_function as Hann
+import scipy.signal.windows as window
 
 def generate_random_signal(fs,N,start,end, weight_constant=False):
     T = (end - start) / N
@@ -21,9 +21,14 @@ def generate_random_signal(fs,N,start,end, weight_constant=False):
     return t,x, t_show, x_show
 
 def plot_signal(t_show, x_show, x_true=None):
-    plt.scatter(t_show, x_show, c='y', edgecolors='r')
-    plt.plot(t_show, x_show, 'b')
-    if x_true is not None: plt.plot(t_show, x_true, 'g')
+    #plt.scatter(t_show, x_show, c='y', edgecolors='r')
+    if x_true is not None: plt.plot(t_show, x_true, 'g', label="Signal")
+    plt.plot(t_show, x_show, '--' 'b', label="New Signal")
+    x_show = np.tile(window.blackman(int(x_show.size/N)), N)        # display window function used
+    plt.plot(t_show, x_show, 'orange', label="Window Function")
+    plt.legend()
+    plt.xlabel("Time")
+    plt.ylabel("Amplitude")
 
 def plot_frequency(arrays, fs):
     for array in arrays:
@@ -47,12 +52,11 @@ def generate_sine_signal(sines, fs,N,start,end,weight_constant=False, to_plot=Tr
             PHASE = np.random.random()
             x += np.sin(sine * t + PHASE )
             x_true += np.sin(sine * t_show + PHASE )
-    x = Hann(t=x)
-    x_true = Hann(t=x_true, N=x.size)
+    x = np.multiply(x, window.blackman(x.size))    # Original signal multiplied by window function
+    x_true = np.tile(x_true[:x.size], N)            # Original randomized signal measured for period T
     x_show = np.array([])
     for i in range(N):
         x_show = np.append(x_show, x)
-
     if to_plot: return t_show, x_show, x_true
     else: return t,x, x_true
 
@@ -67,6 +71,6 @@ if __name__ =='__main__':
     plot_signal(t_show, x_show, x_true)
     plt.grid()
     plt.show()
-    plot_frequency([x_show, x_true],fs)
+    plot_frequency([x_true, x_show],fs)
     plt.grid()
     plt.show()
