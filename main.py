@@ -46,19 +46,17 @@ def generate_sine_signal(sines, fs,N,start,end,weight_constant=False, to_plot=Tr
         for sine in sines:
             A, PHASE = np.random.normal(1,0.25), np.random.random()
             x += A * np.sin(sine * t + PHASE )
-            x_true += A * np.sin(sine * t_show + PHASE )
+            #x_true += A * np.sin(sine * t_show + PHASE )
     else:
         for sine in sines:
             PHASE = np.random.random()
             x += np.sin(sine * t + PHASE )
-            x_true += np.sin(sine * t_show + PHASE )
-    x = np.multiply(x, window.blackman(x.size))    # Original signal multiplied by window function
-    x_true = np.tile(x_true[:x.size], N)            # Original randomized signal measured for period T
-    x_show = np.array([])
-    for i in range(N):
-        x_show = np.append(x_show, x)
+            #x_true += np.sin(sine * t_show + PHASE )
+    x_true = np.tile(x, N)                          # Original randomized signal sampled for period T
+    x = np.multiply(x, window.blackman(x.size))     # Original signal multiplied by window function
+    x_show = np.tile(x, N)
     if to_plot: return t_show, x_show, x_true
-    else: return t,x, x_true
+    else: return t, x, x_true
 
 
 if __name__ =='__main__':
