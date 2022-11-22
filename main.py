@@ -1,7 +1,10 @@
 import numpy as np
+import pandas as pd
 from numpy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
 import scipy.signal.windows as window
+from scipy.io import loadmat
+import os
 
 # Function used to generate completely random signal without resonance frequencies
 """
@@ -61,6 +64,19 @@ def generate_signal(sines, fs, N, start, end, weight_constant=False, to_plot=Tru
     if to_plot: return t_show, x_show, x_true
     else: return t, x, x_true
 
+def acquire_data():
+    '''
+    Imports data from the CollectedDataAugust2020 folder and returns it as Pandas DataFrame
+    '''
+    output=[]
+    dir_name = 'CollectedDataAugust2020'
+    directory = os.fsencode(dir_name)
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".mat"):
+            a = loadmat(os.path.join(dir_name, filename))
+            output.append((filename, pd.DataFrame(a)))
+    return output
 
 if __name__ =='__main__':
     fs = 28.0                                                                       # Sample and evaluate the data at this frequency for the period T

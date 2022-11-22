@@ -9,4 +9,5 @@ if __name__ =='__main__':
     plt.plot(t, window.blackman(t.size), label="Blackman")
     plt.plot(t, window.kaiser(t.size, 3), label="kaiser")
     plt.legend()
+    plt.grid()
     plt.show()
