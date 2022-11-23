@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import scipy.signal.windows as window
 from scipy.io import loadmat
 import os
-
+from math import log as ln
 # Function used to generate completely random signal without resonance frequencies
 """
 def generate_random_signal(fs,N,start,end, weight_constant=False):
@@ -27,7 +27,7 @@ def generate_random_signal(fs,N,start,end, weight_constant=False):
 def plot_signal(t_show, x_show, x_true=None):
     if x_true is not None: plt.plot(t_show, x_true, 'g', label="Signal")            # Plot the sampled signal
     plt.plot(t_show, x_show, '--' 'b', label="New Signal")                          # Plot the corrected signal
-    x_show = np.tile(window.blackman(int(x_show.size/N)), N)
+    x_show = np.tile(window.exponential(int(x_show.size/N), 0, tau=-(int(x_show.size/N) - 1) / ln(0.008), sym=False), N)
     plt.plot(t_show, x_show, 'orange', label="Window Function")                     # Plot the window function used
     plt.legend()
     plt.xlabel("Time")
@@ -59,7 +59,7 @@ def generate_signal(sines, fs, N, start, end, weight_constant=False, to_plot=Tru
             PHASE = 2 * np.pi * np.random.random()                                  # Generate random phase
             x += np.sin(sine * t + PHASE)                                           # Add array of values for each resonance frequency
     x_true = np.tile(x, N)                                                          # Original randomized signal sampled for period T
-    x = np.multiply(x, window.blackman(x.size))                                     # Original signal multiplied by window function
+    x = np.multiply(x, window.exponential(t.size,0,tau= -(t.size-1) / ln(0.008), sym=False))                                   # Original signal multiplied by window function
     x_show = np.tile(x, N)
     if to_plot: return t_show, x_show, x_true
     else: return t, x, x_true
