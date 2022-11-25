@@ -24,11 +24,12 @@ def generate_random_signal(fs,N,start,end, weight_constant=False):
     return t,x, t_show, x_show
 """
 
-def plot_signal(t_show, x_show, x_true=None):
-    if x_true is not None: plt.plot(t_show, x_true, 'g', label="Signal")            # Plot the sampled signal
+def plot_signal(t_show, x_show, x_true=None, z=None):
+    if x_true is not None: plt.plot(t_show, x_true, 'g', label="Sampled Signal")    # Plot the sampled signal
+    if z is not None: plt.plot(t_show, z, '-.' 'r', label='Original Waveform')          # Plot the original signal to be measured
     plt.plot(t_show, x_show, '--' 'b', label="New Signal")                          # Plot the corrected signal
-    x_show = np.tile(window.exponential(int(x_show.size/N), 0, tau=-(int(x_show.size/N) - 1) / ln(0.008), sym=False), N)
-    plt.plot(t_show, x_show, 'orange', label="Window Function")                     # Plot the window function used
+    #x_show = np.tile(window.exponential(int(x_show.size/N), 0, tau=-(int(x_show.size/N) - 1) / ln(0.008), sym=False), N)
+    #plt.plot(t_show, x_show, 'orange', label="Window Function")                    # Plot the window function used
     plt.legend()
     plt.xlabel("Time")
     plt.ylabel("Amplitude")
@@ -38,7 +39,7 @@ def plot_signal(t_show, x_show, x_true=None):
 def plot_frequency(arrays, fs):
     for array in arrays:
         X_show = np.abs(fft(array))                                                 # Perform fast fourier transform on array
-        freq = fftfreq(x_show.size, 1 / fs)                                         # Find corresponding frequencies
+        freq = fftfreq(X_show.size, 1 / fs)                                         # Find corresponding frequencies
         plt.plot(freq, X_show)                                                      # Plot frequency spectrum
     plt.xlabel("Frequency")
     plt.ylabel("Amplitude")
@@ -50,19 +51,22 @@ def generate_signal(sines, fs, N, start, end, weight_constant=False, to_plot=Tru
     t = np.arange(0, (end - start) / N, 1 / fs)                                     # Split sampled period into time intervals
     x = 0                                                                           # Initialize arrays
     x_true = 0
+    z=0
     if weight_constant:                                                             # If varying amplitudes are desired
         for sine in sines:
             A, PHASE = np.random.normal(1,0.25), 2 * np.pi * np.random.random()     # Generate random amplitude and phase
             x += A * np.sin(sine * t + PHASE)                                       # Add array of values for each resonance frequency
+            z += A * np.sin(sine * t_show + PHASE)
     else:                                                                           # If constant amplitude is desired
         for sine in sines:
             PHASE = 2 * np.pi * np.random.random()                                  # Generate random phase
             x += np.sin(sine * t + PHASE)                                           # Add array of values for each resonance frequency
+            z += np.sin(sine * t_show + PHASE)
     x_true = np.tile(x, N)                                                          # Original randomized signal sampled for period T
-    x = np.multiply(x, window.exponential(t.size,0,tau= -(t.size-1) / ln(0.008), sym=False))                                   # Original signal multiplied by window function
+    x = np.multiply(x, window.chebwin(x.size,-60))                                     # Original signal multiplied by window function
     x_show = np.tile(x, N)
-    if to_plot: return t_show, x_show, x_true
-    else: return t, x, x_true
+    if to_plot: return t_show, x_show, x_true, z
+    else: return t, x, x_true, z
 
 def acquire_data():
     '''
@@ -79,11 +83,11 @@ def acquire_data():
     return output
 
 if __name__ =='__main__':
-    fs = 28.0                                                                       # Sample and evaluate the data at this frequency for the period T
+    fs = 68.0                                                                       # Sample and evaluate the data at this frequency for the period T
     N = 6                                                                           # Number of repetitions of sample
     start = 0                                                                       # Start time
     end = 30.0                                                                      # End time
     resonance= 2 * np.pi * np.array([2.23, 1.03, 3.13])                             # Resonance frequencies of structure
-    t_show, x_show, x_true = generate_signal(resonance, fs, N, start, end, True)    # Generate random signal made up of resonance frequencies with random phases and amplitudes
+    t_show, x_show, x_true, z = generate_signal(resonance, fs, N, start, end, True) # Generate random signal made up of resonance frequencies with random phases and amplitudes
     plot_signal(t_show, x_show, x_true)                                             # Plot random, corrected and window function signals
-    plot_frequency([x_true, x_show], fs)                                            # Plot frequency spectrum
+    plot_frequency([x_true, x_show, z], fs)                                         # Plot frequency spectrum
