@@ -7,10 +7,10 @@ def plot_signal(t_show, x_show, x_true=None, z=None):
     if x_true is not None: plt.plot(t_show, x_true, 'g', label="Sampled Signal")    # Plot the sampled signal
     if z is not None: plt.plot(t_show, z, '-.' 'r', label='Original Waveform')      # Plot the original signal to be measured
     plt.plot(t_show, x_show, '--' 'b', label="New Signal")
-    x_show = np.tile(window.blackman(int(x_show.size / N)), N)                      # Plot the corrected signal
+    x_show = np.tile(window.chebwin(int(x_show.size / N),-60), N)                      # Plot the corrected signal
     plt.plot(t_show, x_show, 'orange', label="Window Function")                     # Plot the window function used
     plt.legend()
-    plt.title("Blackman")
+    plt.title("chebwin")
     plt.xlabel("Time")
     plt.ylabel("Amplitude")
     plt.grid()
@@ -28,7 +28,7 @@ def plot_frequency(arrays, fs):
         plt.plot(freq, X_show)                                                                              # Plot frequency spectrum
     print("Resonance Attenuation:", round(20*np.log10(max_val[1]/max_val[0]), 3), "dB")                     # Print ratio of corrected signal max peak to original
     print("Side-Main Peak Ratio:", round(side_peaks[1]/max_val[1], 3))
-    plt.title("Blackman")
+    plt.title("chebwin")
     plt.xlabel("Frequency")
     plt.ylabel("Amplitude")
     plt.grid()
@@ -51,7 +51,7 @@ def generate_signal(sines, fs, N, start, end, weight_constant=False, to_plot=Tru
             x += np.sin(sine * t + PHASE)                                           # Add array of values for sampling period
             z += np.sin(sine * t_show + PHASE)                                      # Add array of values for longer period
     x_true = np.tile(x, N)                                                          # Original randomized signal sampled for period T
-    x = np.multiply(x, window.blackman(x.size, 3))                                  # Original signal multiplied by window function
+    x = np.multiply(x, window.chebwin(x.size, -60))                                  # Original signal multiplied by window function
     x_show = np.tile(x, N)
     if to_plot: return t_show, x_show, x_true, z
     else: return t, x, x_true, z
